@@ -16,7 +16,7 @@
     <message>
         <location filename="../qml/pages/AboutPage.qml" line="61"/>
         <source>Control Soundcore headphones, earbuds and speakers: sound modes, noise canceling, equalizer, button configuration, battery levels and more.</source>
-        <translation>Ovládání sluchátek, špuntů a reproduktorů Soundcore: zvukové režimy, potlačení hluku, ekvalizér, nastavení tlačítek, stav baterie a další.</translation>
+        <translation>Ovládání náhlavních sluchátek, špuntových sluchátek a reproduktorů Soundcore: zvukové režimy, potlačení hluku, ekvalizér, nastavení tlačítek, stav baterie a další.</translation>
     </message>
     <message>
         <location filename="../qml/pages/AboutPage.qml" line="71"/>
@@ -31,12 +31,12 @@
     <message>
         <location filename="../qml/pages/AboutPage.qml" line="81"/>
         <source>SailSCQ is a user interface for OpenSCQ30 by Kyle Scheuing. The OpenSCQ30 command line tool, which talks to the headphones, is included in the app unchanged.</source>
-        <translation>SailSCQ je uživatelské rozhraní pro OpenSCQ30 od Kylea Scheuinga. Nástroj příkazové řádky OpenSCQ30, který komunikuje se sluchátky, je v aplikaci obsažen beze změn.</translation>
+        <translation>SailSCQ je uživatelské rozhraní pro OpenSCQ30 od Kylea Scheuinga. Nástroj příkazového řádku OpenSCQ30, který komunikuje se sluchátky, je v aplikaci obsažen beze změn.</translation>
     </message>
     <message>
         <location filename="../qml/pages/AboutPage.qml" line="85"/>
         <source>Included version</source>
-        <translation>Obsažená verze</translation>
+        <translation>Použitá verze</translation>
     </message>
     <message>
         <location filename="../qml/pages/AboutPage.qml" line="90"/>
@@ -51,7 +51,7 @@
     <message>
         <location filename="../qml/pages/AboutPage.qml" line="101"/>
         <source>SailSCQ and OpenSCQ30 are free software under the GNU General Public License, version 3 or later. You may use, share and change them under its terms.</source>
-        <translation>SailSCQ a OpenSCQ30 jsou svobodný software pod licencí GNU General Public License verze 3 nebo novější. Můžete je používat, sdílet a upravovat za jejích podmínek.</translation>
+        <translation>SailSCQ a OpenSCQ30 jsou svobodné programy pod licencí GNU General Public License verze 3 nebo novější. Můžete je používat, sdílet a upravovat za jejích podmínek.</translation>
     </message>
     <message>
         <location filename="../qml/pages/AboutPage.qml" line="105"/>
@@ -415,6 +415,11 @@
 <context>
     <name>SettingItem</name>
     <message>
+        <location filename="../qml/components/SettingItem.qml" line="32"/>
+        <source>LDAC can offer higher audio quality, but may increase power consumption and reduce Bluetooth connection stability. Changing modes may require reconnecting the headphones.</source>
+        <translation>LDAC může nabídnout vyšší kvalitu zvuku, ale také zvýšit spotřebu energie a snížit stabilitu Bluetooth spojení. Změna režimu může vyžadovat opětovné připojení sluchátek.</translation>
+    </message>
+    <message>
         <location filename="../qml/components/SettingItem.qml" line="29"/>
         <source>Limits the level to protect your hearing.</source>
         <translation>Omezuje hlasitost, aby chránila váš sluch.</translation>
@@ -562,9 +567,9 @@
         <location filename="../qml/pages/SupportedDevicesPage.qml" line="115"/>
         <source>%n models · OpenSCQ30 %1</source>
         <translation>
-            <numerusform>Modely: %n · OpenSCQ30 %1</numerusform>
-            <numerusform>Modely: %n · OpenSCQ30 %1</numerusform>
-            <numerusform>Modely: %n · OpenSCQ30 %1</numerusform>
+            <numerusform>%n model · OpenSCQ30 %1</numerusform>
+            <numerusform>%n modely · OpenSCQ30 %1</numerusform>
+            <numerusform>%n modelů · OpenSCQ30 %1</numerusform>
         </translation>
     </message>
     <message numerus="yes">
@@ -572,9 +577,9 @@
         <location filename="../qml/pages/SupportedDevicesPage.qml" line="166"/>
         <source>%n models</source>
         <translation>
-            <numerusform>Modely: %n</numerusform>
-            <numerusform>Modely: %n</numerusform>
-            <numerusform>Modely: %n</numerusform>
+            <numerusform>%n model</numerusform>
+            <numerusform>%n modely</numerusform>
+            <numerusform>%n modelů</numerusform>
         </translation>
     </message>
     <message>
