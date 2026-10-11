@@ -108,6 +108,14 @@ Page {
         header: Column {
             width: listView.width
 
+            // Reserve a touch-free area above the header in portrait mode.
+            // On displays with a camera cutout, the hardware otherwise
+            // overlaps the first line of the Supported devices title.
+            Item {
+                width: 1
+                height: page.isPortrait ? Theme.itemSizeSmall : 0
+            }
+
             PageHeader {
                 title: qsTr("Supported devices")
                 description: page.allModels.length === 0 ? ""

@@ -27,6 +27,11 @@ Column {
 
     width: parent ? parent.width : Screen.width
 
+    // Entire Slider items handle horizontal dragging, even beyond the
+    // visible track. Leave an actual item-free strip for Sailfish's swipe-back.
+    readonly property real navigationGutter: Math.max(Theme.itemSizeSmall, width * 0.23)
+    readonly property real valueColumnWidth: Math.max(Theme.itemSizeLarge, width * 0.25)
+
     function sync() {
         if (dirty)
             return
@@ -59,23 +64,65 @@ Column {
 
     Repeater {
         model: eq.bands.length
-        Slider {
-            id: bandSlider
+        Row {
+            id: bandRow
             width: eq.width
-            label: eq.formatHz(eq.bands[index])
-            minimumValue: eq.params.min !== undefined ? eq.params.min : -120
-            maximumValue: eq.params.max !== undefined ? eq.params.max : 120
-            stepSize: 1
-            function sync() {
-                if (!down && eq.edited.length > index)
-                    value = eq.edited[index]
+            height: Theme.itemSizeSmall
+            spacing: 0
+            opacity: eq.pending ? 0.6 : 1.0
+
+            // Text does not consume swipes. Keep the entire left column
+            // outside the Slider MouseArea for Sailfish's native back gesture.
+            Item {
+                width: eq.navigationGutter
+                height: bandRow.height
+                Label {
+                    anchors.fill: parent
+                    anchors.leftMargin: Theme.horizontalPageMargin
+                    anchors.rightMargin: Theme.paddingSmall
+                    text: eq.formatHz(eq.bands[index])
+                    font.pixelSize: Theme.fontSizeMedium
+                    color: Theme.secondaryColor
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: Text.AlignLeft
+                    elide: Text.ElideRight
+                }
             }
-            Component.onCompleted: sync()
-            Connections { target: eq; onEditedChanged: bandSlider.sync() }
-            valueText: eq.formatDb(value)
-            enabled: !eq.pending
-            onDownChanged: if (!down) eq.setBand(index, value)
-            onValueChanged: if (down) eq.setBand(index, value)
+
+            Slider {
+                id: bandSlider
+                width: Math.max(0, eq.width - eq.navigationGutter - eq.valueColumnWidth)
+                // No internal captions: Silica switches to compact one-line height.
+                label: ""
+                valueText: ""
+                leftMargin: Theme.paddingMedium
+                rightMargin: Theme.paddingMedium
+                minimumValue: eq.params.min !== undefined ? eq.params.min : -120
+                maximumValue: eq.params.max !== undefined ? eq.params.max : 120
+                stepSize: 1
+                function sync() {
+                    if (!down && eq.edited.length > index)
+                        value = eq.edited[index]
+                }
+                Component.onCompleted: sync()
+                Connections { target: eq; onEditedChanged: bandSlider.sync() }
+                enabled: !eq.pending
+                onDownChanged: if (!down) eq.setBand(index, value)
+                onValueChanged: if (down) eq.setBand(index, value)
+            }
+
+            Item {
+                width: eq.valueColumnWidth
+                height: bandRow.height
+                Label {
+                    anchors.right: parent.right
+                    anchors.rightMargin: Theme.horizontalPageMargin
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: eq.formatDb(bandSlider.value)
+                    font.pixelSize: Theme.fontSizeMedium
+                    color: bandSlider.down ? Theme.highlightColor : Theme.primaryColor
+                }
+            }
         }
     }
 

@@ -19,14 +19,17 @@ Item {
     readonly property var value: session ? session.values[settingId] : undefined
     readonly property bool pending: session ? !!session.pending[settingId] : false
     readonly property string label: Strings.name(settingId)
+    property bool shown: true
 
     width: parent ? parent.width : Screen.width
-    height: loader.item ? loader.item.height : 0
+    visible: shown
+    height: shown && loader.item ? loader.item.height : 0
 
     // Short explanation below some settings (translated via Qt Linguist)
     function description() {
         switch (settingId) {
         case "limitHighVolume": return qsTr("Limits the level to protect your hearing.")
+        case "ldac": return qsTr("LDAC can offer higher audio quality, but may increase power consumption and reduce Bluetooth connection stability. Changing modes may require reconnecting the headphones.")
         case "gamingMode": return qsTr("Lower latency for games and videos.")
         case "exportCustomEqualizerProfiles": return qsTr("Choose the profiles to export.")
         case "dualConnections": return qsTr("Connect the headphones to two devices at the same time.")
@@ -43,6 +46,14 @@ Item {
                                              || settingId === "exportCustomEqualizerProfiles"
 
     function localizedOption(i) {
+        // OpenSCQ30 uses protocol values like "30m" and English display
+        // strings like "30 minutes". Generate the localized label from
+        // the stable protocol value, without changing what we send back.
+        if (settingId === "autoPowerOff") {
+            var minutes = /^(\d+)m$/i.exec(String(options()[i]))
+            if (minutes)
+                return Strings.translateText(minutes[1] + " minutes")
+        }
         var lo = params.localizedOptions || []
         var text = lo[i] !== undefined && lo[i] !== "" ? lo[i] : Strings.name(options()[i])
         return userNamedOptions ? text : Strings.translateText(text)
@@ -90,25 +101,43 @@ Item {
     // ---- i32Range --------------------------------------------------------
     Component {
         id: rangeComponent
-        Slider {
-            id: slider
-            label: root.label
-            minimumValue: root.params.start !== undefined ? root.params.start : 0
-            maximumValue: root.params.end !== undefined ? root.params.end : 100
-            stepSize: root.params.step || 1
-            valueText: Math.round(value)
-            enabled: !root.pending
-            opacity: root.pending ? 0.6 : 1.0
+        Column {
+            width: parent.width
 
-            function sync() {
-                if (!down && typeof root.value === "number")
-                    value = root.value
+            // On Soundcore earbuds this level belongs to the manually
+            // selected ANC mode. Show its label above the slider so the
+            // relationship is clear rather than placing it below the scale.
+            Label {
+                visible: root.settingId === "manualNoiseCanceling"
+                x: Theme.horizontalPageMargin
+                width: parent.width - 2 * Theme.horizontalPageMargin
+                text: root.settingId === "manualNoiseCanceling" ? root.label + ":" : root.label
+                color: Theme.highlightColor
+                font.pixelSize: Theme.fontSizeSmall
+                wrapMode: Text.Wrap
             }
-            Component.onCompleted: sync()
-            Connections { target: root.session; onValuesUpdated: slider.sync() }
-            onDownChanged: {
-                if (!down && Math.round(value) !== root.value)
-                    root.session.setValue(root.settingId, Math.round(value))
+
+            Slider {
+                id: slider
+                width: parent.width
+                label: root.settingId === "manualNoiseCanceling" ? "" : root.label
+                minimumValue: root.params.start !== undefined ? root.params.start : 0
+                maximumValue: root.params.end !== undefined ? root.params.end : 100
+                stepSize: root.params.step || 1
+                valueText: Math.round(value)
+                enabled: !root.pending
+                opacity: root.pending ? 0.6 : 1.0
+
+                function sync() {
+                    if (!down && typeof root.value === "number")
+                        value = root.value
+                }
+                Component.onCompleted: sync()
+                Connections { target: root.session; onValuesUpdated: slider.sync() }
+                onDownChanged: {
+                    if (!down && Math.round(value) !== root.value)
+                        root.session.setValue(root.settingId, Math.round(value))
+                }
             }
         }
     }
@@ -122,6 +151,12 @@ Item {
             label: root.label
             enabled: !root.pending
             description: root.pending ? qsTr("Applying…") : ""
+            // The backend can report the selected value as an English string.
+            // Keep the displayed auto-off duration localized, even before the
+            // ComboBox menu has been opened (without changing the CLI value).
+            value: root.settingId === "autoPowerOff"
+                   ? Strings.translateText(root.localizedValue(root.value))
+                   : (currentItem ? currentItem.text : "")
 
             // optional selects get an extra "None" entry at index 0
             readonly property var entries: optional ? [null].concat(root.options()) : root.options()
